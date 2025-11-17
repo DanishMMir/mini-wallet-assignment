@@ -16,8 +16,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 const {
     data: transactionsList,
     balance,
-    loading,
-    error,
+    transactionListLoading,
+    transactionListError,
+    transactionSaveLoading,
+    transactionSaveError,
     page,
     lastPage,
     fetchTransactions,
@@ -54,9 +56,10 @@ function prevPage() {
             <div class="grid auto-rows-min gap-4">
                 <div class="flex items-center justify-between gap-4">
                     <div class="flex items-center gap-4">
-                        <h1 class="text-2xl font-semibold">Send Money</h1>
+                        <h1 class="text-2xl font-semibold">Send Money ({{ balance }})</h1>
+                        <span v-if="transactionSaveLoading" class="text-sm text-muted-foreground">Loading...</span>
+                        <span v-if="transactionSaveError" class="text-sm text-red-600">{{ transactionSaveError }}</span>
                     </div>
-                    <h1 class="text-2xl font-semibold">Current Balance: {{ balance }}</h1>
                 </div>
                 <div
                     class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
@@ -70,7 +73,7 @@ function prevPage() {
                             type="number"
                             min="1"
                             placeholder="Amount"
-                            class="border rounded px-3 py-2 w-32"
+                            class="border rounded px-3 py-2 w-64"
                             required
                         />
                         <input
@@ -78,12 +81,12 @@ function prevPage() {
                             type="number"
                             min="1"
                             placeholder="Recipient ID"
-                            class="border rounded px-3 py-2 w-32"
+                            class="border rounded px-3 py-2 w-64"
                             required
                         />
                         <button
                             type="submit"
-                            class="rounded border px-4 py-2 bg-primary text-white"
+                            class="rounded border px-4 py-2 bg-primary text-white dark:bg-primary-dark dark:text-black"
                             :disabled="loading"
                         >
                             Send
@@ -95,8 +98,8 @@ function prevPage() {
             <div class="flex items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
                     <h1 class="text-2xl font-semibold">Transactions</h1>
-                    <span v-if="loading" class="text-sm text-muted-foreground">Loading...</span>
-                    <span v-if="error" class="text-sm text-red-600">{{ error }}</span>
+                    <span v-if="transactionListLoading" class="text-sm text-muted-foreground">Loading...</span>
+                    <span v-if="transactionListError" class="text-sm text-red-600">{{ transactionListError }}</span>
                 </div>
                 <h1 class="text-2xl font-semibold">Current Balance: {{ balance }}</h1>
             </div>

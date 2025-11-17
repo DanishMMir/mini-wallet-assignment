@@ -4,36 +4,39 @@ import type { Transaction } from '@/types/transaction';
 export function useTransactions() {
   const data = ref<Transaction[]>([]);
   const balance = ref<string | null>(null);
-  const loading = ref(false);
-  const error = ref<string | null>(null);
+  const transactionListLoading = ref(false);
+  const transactionSaveLoading = ref(false);
+  const transactionListError = ref<string | null>(null);
+  const transactionSaveError = ref<string | null>(null);
   const page = ref(1);
   const lastPage = ref<number | null>(null);
   const sendAmount = ref<number | null>(null);
   const selectedRecipient = ref<string | null>(null);
 
   async function fetchTransactions(p: number = 1) {
-    loading.value = true;
-    error.value = null;
+      transactionListLoading.value = true;
+      transactionListError.value = null;
     try {
       const res = await fetch(`/api/transactions?page=${p}`, {
         headers: { Accept: 'application/json' },
       });
 
-      if (!res.ok) throw new Error(`Failed (${res.status})`);
+      if (!res.ok) throw new Error(`Failed (${res.statusText} - ${res.status})`);
       const json = await res.json();
-      console.log(json);
       balance.value = json.balance;
       data.value = json.transactions.data;
       page.value = json.transactions.current_page;
       lastPage.value = json.transactions.last_page;
     } catch (e: any) {
-      error.value = e.message;
+        transactionListError.value = e.message;
     } finally {
-      loading.value = false;
+        transactionListLoading.value = false;
     }
   }
   function sendMoney() {
     if (!sendAmount.value || !selectedRecipient.value) return;
+    transactionSaveLoading.value = true;
+    transactionSaveError.value = null;
     fetch('/api/transactions', {
         method: 'POST',
         headers: {
@@ -47,13 +50,17 @@ export function useTransactions() {
         }),
     })
         .then(async res => {
-            if (!res.ok) throw new Error(`Failed (${res.status})`);
+            if (!res.ok) throw new Error(`Failed (${res.statusText} - ${res.status})`);
             await fetchTransactions();
         })
         .catch(e => {
-            error.value = e.message;
+            transactionSaveError.value = e.message;
+        })
+        .finally(() => {
+            transactionSaveLoading.value = false;
+
         });
 }
 
-  return { data, balance, loading, error, page, lastPage, fetchTransactions, sendAmount, selectedRecipient, sendMoney };
+  return { data, balance, transactionListLoading, transactionSaveLoading, transactionListError, transactionSaveError, page, lastPage, fetchTransactions, sendAmount, selectedRecipient, sendMoney };
 }
