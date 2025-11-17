@@ -1,0 +1,68 @@
+networks:
+  mini_wallet:
+
+services:
+  server:
+    build:
+      dockerfile: ./docker/dockerfiles/nginx.dockerfile
+    ports:
+      - 8080:80
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php
+      - mysql
+    container_name: mini_wallet_server
+    networks:
+      - mini_wallet
+  php:
+    build:
+      dockerfile: ./docker/dockerfiles/php.dockerfile
+    volumes:
+      - ./:/var/www/html:delegated
+    container_name: mini_wallet_php
+    networks:
+      - mini_wallet
+  mysql:
+    image: mysql
+    restart: unless-stopped
+    tty: true
+    container_name: mini_wallet_mysql
+    env_file:
+      - ./docker/mysql/.env
+    ports:
+      - 3306:3306
+    networks:
+      - mini_wallet
+    volumes:
+      - ~/mysql_data:/var/lib/mysql
+
+  composer:
+    build:
+      dockerfile: ./docker/dockerfiles/composer.dockerfile
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - php
+    networks:
+      - mini_wallet
+  artisan:
+    build:
+      dockerfile: ./docker/dockerfiles/php.dockerfile
+    volumes:
+      - ./:/var/www/html
+    entrypoint: ["php", "/var/www/html/artisan"]
+    networks:
+      - mini_wallet
+  scheduler:
+    build:
+      dockerfile: ./docker/dockerfiles/php.dockerfile
+    container_name: mini_wallet_scheduler
+    volumes:
+      - ./:/var/www/html
+    working_dir: /var/www/html
+    entrypoint: [ "php", "artisan", "schedule:work" ]
+    networks:
+      - mini_wallet
+
