@@ -51,7 +51,7 @@ export function useTransactions() {
     })
         .then(async res => {
             if (!res.ok) throw new Error(`Failed (${res.statusText} - ${res.status})`);
-            await fetchTransactions();
+            // await fetchTransactions();
         })
         .catch(e => {
             transactionSaveError.value = e.message;

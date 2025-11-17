@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { usePage } from '@inertiajs/vue3';
+const userId = usePage().props.auth.user.id;
+import Pusher from 'pusher-js';
 import { transactions } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useTransactions } from '@/composables/useTransactions';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -43,6 +46,44 @@ function prevPage() {
         fetchTransactions(page.value - 1);
     }
 }
+
+console.log(import.meta.env);
+Pusher.logToConsole = true;
+const pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    forceTLS: true,
+    authEndpoint: '/api/broadcasting/auth', // This endpoint is provided by Laravel for private channel authentication
+    auth: {
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+            // Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        },
+    },
+});
+
+console.log(userId);
+// const channel = pusher.subscribe(`private-user-${props.userId}`);
+const channel = pusher.subscribe(`private-user-${userId}`);
+
+channel.bind('pusher:subscription_succeeded', () => {
+    console.log('Subscription succeeded');
+});
+
+channel.bind('transaction.completed', (data: any) => {
+    console.log('Transaction completed:', data);
+    if (userId === data.transaction.sender_id) {
+        balance.value = data.sender_balance;
+    } else if (userId === data.transaction.receiver_id) {
+        balance.value = data.receiver_balance;
+    }
+    transactions.value = [data.transaction, ...transactions.value];
+});
+
+onUnmounted(() => {
+    pusher.disconnect();
+});
 
 </script>
 
