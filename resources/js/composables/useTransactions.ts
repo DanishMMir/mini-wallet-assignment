@@ -8,6 +8,8 @@ export function useTransactions() {
   const error = ref<string | null>(null);
   const page = ref(1);
   const lastPage = ref<number | null>(null);
+  const sendAmount = ref<number | null>(null);
+  const selectedRecipient = ref<string | null>(null);
 
   async function fetchTransactions(p: number = 1) {
     loading.value = true;
@@ -30,6 +32,28 @@ export function useTransactions() {
       loading.value = false;
     }
   }
+  function sendMoney() {
+    if (!sendAmount.value || !selectedRecipient.value) return;
+    fetch('/api/transactions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+        },
+        body: JSON.stringify({
+            receiver_id: selectedRecipient.value,
+            amount: sendAmount.value,
+        }),
+    })
+        .then(async res => {
+            if (!res.ok) throw new Error(`Failed (${res.status})`);
+            await fetchTransactions();
+        })
+        .catch(e => {
+            error.value = e.message;
+        });
+}
 
-  return { data, balance, loading, error, page, lastPage, fetchTransactions };
+  return { data, balance, loading, error, page, lastPage, fetchTransactions, sendAmount, selectedRecipient, sendMoney };
 }

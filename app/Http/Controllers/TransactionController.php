@@ -18,6 +18,7 @@ class TransactionController extends Controller
         $transactions = Transaction::where('sender_id', $user->id)
             ->orWhere('receiver_id', $user->id)
             ->with(['sender', 'receiver'])
+            ->orderBy('created_at', 'desc')
             ->paginate(20);
 
         return response()->json([
