@@ -37,7 +37,6 @@ services:
       - mini_wallet
     volumes:
       - ~/mysql_data:/var/lib/mysql
-
   composer:
     build:
       dockerfile: ./docker/dockerfiles/composer.dockerfile
@@ -45,6 +44,7 @@ services:
       - ./:/var/www/html
     depends_on:
       - php
+    container_name: mini_wallet_composer
     networks:
       - mini_wallet
   artisan:
@@ -53,16 +53,7 @@ services:
     volumes:
       - ./:/var/www/html
     entrypoint: ["php", "/var/www/html/artisan"]
-    networks:
-      - mini_wallet
-  scheduler:
-    build:
-      dockerfile: ./docker/dockerfiles/php.dockerfile
-    container_name: mini_wallet_scheduler
-    volumes:
-      - ./:/var/www/html
-    working_dir: /var/www/html
-    entrypoint: [ "php", "artisan", "schedule:work" ]
+    container_name: mini_wallet_artisan
     networks:
       - mini_wallet
 
