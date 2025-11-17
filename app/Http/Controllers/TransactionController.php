@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateTransactionRequest;
 use App\Models\Transaction;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class TransactionController extends Controller
 {
-    public function index(Request $request) {
+    public function index(Request $request): JsonResponse
+    {
         $user = $request->user();
         $transactions = Transaction::where('sender_id', $user->id)
             ->orWhere('receiver_id', $user->id)
@@ -22,16 +25,12 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function store(Request $request) {
-        $validated = $request->validate([
-            'receiver_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:0.01|max:1000000',
-        ]);
-
-        return DB::transaction(function () use ($validated, $request) {
+    public function store(CreateTransactionRequest $request): JsonResponse
+    {
+        return DB::transaction(static function () use ($request) {
             $sender = $request->user();
-            $receiver = User::findOrFail($validated['receiver_id']);
-            $amount = $validated['amount'];
+            $amount = $request->get('amount');
+            $receiver = User::findOrFail($request->get('receiver_id'));
 
             if ($sender->id === $receiver->id) {
                 throw ValidationException::withMessages([
