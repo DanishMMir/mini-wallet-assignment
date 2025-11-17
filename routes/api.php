@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/tokens/create', [UserController::class, 'createToken']);

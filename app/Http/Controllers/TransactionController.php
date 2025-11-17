@@ -19,9 +19,10 @@ class TransactionController extends Controller
             ->orWhere('receiver_id', $user->id)
             ->with(['sender', 'receiver'])
             ->paginate(20);
+
         return response()->json([
             'balance' => $user->balance,
-            'transactions' => $transactions
+            'transactions' => $transactions,
         ]);
     }
 
@@ -34,7 +35,7 @@ class TransactionController extends Controller
 
             if ($sender->id === $receiver->id) {
                 throw ValidationException::withMessages([
-                    'receiver_id' => ['Cannot transfer to yourself']
+                    'receiver_id' => ['Cannot transfer to yourself'],
                 ]);
             }
 
@@ -44,7 +45,7 @@ class TransactionController extends Controller
             $sender = User::where('id', $sender->id)->lockForUpdate()->first();
             if ($sender->balance < $totalDebit) {
                 throw ValidationException::withMessages([
-                    'balance' => ['Insufficient funds']
+                    'balance' => ['Insufficient funds'],
                 ]);
             }
 
@@ -64,7 +65,7 @@ class TransactionController extends Controller
             return response()->json([
                 'message' => 'Transfer successful',
                 'new_balance' => $sender->balance,
-                'transaction_id' => $transaction->id
+                'transaction_id' => $transaction->id,
             ], 201);
         });
     }

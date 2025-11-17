@@ -57,6 +57,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class, 'sender_id');
     }
+
     public function receivedTransactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'receiver_id');
