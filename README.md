@@ -41,6 +41,7 @@ The assignment was pretty straight forward. It was easy to implement and work on
 - run `docker-compose run  --rm artisan migrate`
 - run `docker-compose run  --rm php npm install`
 - run `docker-compose run  --rm php npm run build`
+- **for pusher events to work, start queue listner in a new terminal window. run `docker-compose run  --rm artisan queue:listen`**
 - connect your favourite MySQL tool (MySQL workbench) to the `mysql` docker container using below-mentioned credentials.
 ```
     DB_CONNECTION=mysql
