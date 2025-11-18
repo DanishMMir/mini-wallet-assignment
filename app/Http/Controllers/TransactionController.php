@@ -65,7 +65,7 @@ class TransactionController extends Controller
             ]);
 
             event(
-                new TransactionCompleted($transaction->load(['sender', 'receiver']), $sender->balance, $receiver->balance)
+                new TransactionCompleted($transaction->load(['sender', 'receiver']), round($sender->balance,2), round($receiver->balance,2))
             );
 
             return response()->json([
