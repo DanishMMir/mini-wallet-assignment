@@ -38,6 +38,7 @@ The assignment was pretty straight forward. It was easy to implement and work on
 - If the above step fails to run commands, run them manually in following order
 - run `cp .env.example .env`
 - run `docker-compose run  --rm artisan key:generate`
+- run `docker-compose run  --rm artisan migrate`
 - run `docker-compose run  --rm php npm install`
 - run `docker-compose run  --rm php npm run build`
 - connect your favourite MySQL tool (MySQL workbench) to the `mysql` docker container using below-mentioned credentials.
