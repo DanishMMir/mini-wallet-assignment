@@ -11,7 +11,8 @@
 /resources/js/wayfinder
 /vendor
 .DS_Store
-.env
+/.env
+!docker/mysql/.env.
 .env.backup
 .env.production
 .phpactor.json
