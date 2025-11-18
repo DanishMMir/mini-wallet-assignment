@@ -12,7 +12,7 @@ Route::post('/tokens/create', [UserController::class, 'createToken']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', function (Request $request) {
         return response()->json([
-            'users' => User::all()
+            'users' => User::all(),
         ]);
     });
     Route::get('/transactions', [TransactionController::class, 'index']);

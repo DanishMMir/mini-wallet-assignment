@@ -43,8 +43,8 @@ export interface Transaction {
     amount: number;
     commission_fee: number;
     created_at: string;
-    sender?: Pick<User, 'id'|'name'>;
-    receiver?: Pick<User, 'id'|'name'>;
+    sender?: Pick<User, 'id' | 'name'>;
+    receiver?: Pick<User, 'id' | 'name'>;
 }
 
 export interface TransactionsResponse {
