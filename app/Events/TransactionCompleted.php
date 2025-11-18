@@ -26,8 +26,8 @@ class TransactionCompleted implements ShouldBroadcast{
 
     public function broadcastOn(): array    {
         return [
-            new PrivateChannel('user-' . $this->transaction->sender_id),
-            new PrivateChannel('user-' . $this->transaction->receiver_id),
+            new Channel('user-' . $this->transaction->sender_id),
+            new Channel('user-' . $this->transaction->receiver_id),
         ];
     }
 

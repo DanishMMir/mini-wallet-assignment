@@ -51,7 +51,7 @@ export function useTransactions() {
     })
         .then(async res => {
             if (!res.ok) throw new Error(`Failed (${res.statusText} - ${res.status})`);
-            // await fetchTransactions();
+            // we will use pusher to update the balance of the user who sent the money
         })
         .catch(e => {
             transactionSaveError.value = e.message;

@@ -47,29 +47,19 @@ function prevPage() {
     }
 }
 
-console.log(import.meta.env);
-Pusher.logToConsole = true;
 const pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
     forceTLS: true,
-    authEndpoint: '/api/broadcasting/auth', // This endpoint is provided by Laravel for private channel authentication
+    authEndpoint: '/api/broadcasting/auth',
     auth: {
         headers: {
-            'Content-Type': 'application/json',
             Accept: 'application/json',
             'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
-            // Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
         },
     },
 });
 
-console.log(userId);
-// const channel = pusher.subscribe(`private-user-${props.userId}`);
-const channel = pusher.subscribe(`private-user-${userId}`);
-
-channel.bind('pusher:subscription_succeeded', () => {
-    console.log('Subscription succeeded');
-});
+const channel = pusher.subscribe(`user-${userId}`);
 
 channel.bind('transaction.completed', (data: any) => {
     console.log('Transaction completed:', data);
@@ -78,7 +68,7 @@ channel.bind('transaction.completed', (data: any) => {
     } else if (userId === data.transaction.receiver_id) {
         balance.value = data.receiver_balance;
     }
-    transactions.value = [data.transaction, ...transactions.value];
+    transactionsList.value = [data.transaction, ...transactionsList.value];
 });
 
 onUnmounted(() => {
