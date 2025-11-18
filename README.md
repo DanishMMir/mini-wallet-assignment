@@ -35,6 +35,11 @@ The assignment was pretty straight forward. It was easy to implement and work on
 - pull and start docker containers using `docker-compose up -d`
 - install dependencies by running `docker-compose run  --rm composer install`
 - It will install dependencies, create app key, copy .env.example into .env, migrate data, install and build assets
+- If the above step fails to run commands, run them manually in following order
+- run `cp .env.example .env`
+- run `docker-compose run  --rm artisan key:generate`
+- run `docker-compose run  --rm php npm install`
+- run `docker-compose run  --rm php npm run build`
 - connect your favourite MySQL tool (MySQL workbench) to the `mysql` docker container using below-mentioned credentials.
 ```
     DB_CONNECTION=mysql
@@ -73,7 +78,7 @@ The assignment was pretty straight forward. It was easy to implement and work on
 - Update balance and frontend by pusher events.
 
 ## Improvements that can be made
-- More elaborate and complex database schema can be defined. 
+- More elaborate and complex database schema can be defined.
 - Balance history after each transaction can be saved.
 - coding standards can be improved by adding tools like phpstan, psalm, etc.
 - A local build pipeline can be created to check if the new code follows the defined coding standards before committing.
