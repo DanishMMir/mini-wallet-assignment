@@ -33,7 +33,7 @@ class TransactionController extends Controller
         return DB::transaction(static function () use ($request) {
             $sender = $request->user();
             $amount = $request->get('amount');
-            $receiver = User::findOrFail($request->get('receiver_id'));
+            $receiver = User::where('id', $request->get('receiver_id'))->lockForUpdate()->first();
 
             if ($sender->id === $receiver->id) {
                 throw ValidationException::withMessages([
