@@ -36,4 +36,22 @@ export interface User {
     updated_at: string;
 }
 
+export interface Transaction {
+    id: number;
+    sender_id: number;
+    receiver_id: number;
+    amount: number;
+    commission_fee: number;
+    created_at: string;
+    sender?: Pick<User, 'id' | 'name'>;
+    receiver?: Pick<User, 'id' | 'name'>;
+}
+
+export interface TransactionsResponse {
+    balance: number;
+    transactions: {
+        data: Transaction[];
+    };
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;

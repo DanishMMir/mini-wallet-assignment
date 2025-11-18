@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TransactionCompleted;
 use App\Http\Requests\CreateTransactionRequest;
 use App\Models\Transaction;
 use App\Models\User;
@@ -18,6 +19,7 @@ class TransactionController extends Controller
         $transactions = Transaction::where('sender_id', $user->id)
             ->orWhere('receiver_id', $user->id)
             ->with(['sender', 'receiver'])
+            ->orderBy('created_at', 'desc')
             ->paginate(20);
 
         return response()->json([
@@ -61,6 +63,10 @@ class TransactionController extends Controller
                 'amount' => $amount,
                 'commission_fee' => $commissionFee,
             ]);
+
+            event(
+                new TransactionCompleted($transaction->load(['sender', 'receiver']), $sender->balance, $receiver->balance)
+            );
 
             return response()->json([
                 'message' => 'Transfer successful',
